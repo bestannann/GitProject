@@ -92,11 +92,6 @@ namespace Tanks
             ? defaultSpawnPoint.transform
             : spawnPoints[Random.Range(0, spawnPoints.Count)].transform;
         }
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
         public static List<GameObject> GetAllObjectsOfTypeInScene<T>()
         {
             var objectsInScene = new List<GameObject>();

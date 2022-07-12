@@ -8,7 +8,9 @@ namespace Complete
     {
         public int m_PlayerNumber = 1;              // Used to identify the different players.
         public Rigidbody m_Shell;                   // Prefab of the shell.
-        public Transform m_FireTransform;           // A child of the tank where the shells are spawned.
+        public Transform m_FireTransform;
+        public Transform TankTurret;                // TankTurret
+        public float m_TurnSpeed = 180f;            // A child of the tank where the shells are spawned.
         public Slider m_AimSlider;                  // A child of the tank that displays the current launch force.
         public AudioSource m_ShootingAudio;         // Reference to the audio source used to play the shooting audio. NB: different to the movement audio source.
         public AudioClip m_ChargingClip;            // Audio that plays when each shot is charging up.
@@ -40,6 +42,8 @@ namespace Complete
 
             // The rate that the launch force charges up is the range of possible forces by the max charge time.
             m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
+
+            TankTurret = Tanks.ExtensionMethods.FindAnyChild<Transform>(transform, "TankTurret");
         }
 
 
@@ -71,7 +75,6 @@ namespace Complete
             {
                 // Increment the launch force and update the slider.
                 m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
-
                 m_AimSlider.value = m_CurrentLaunchForce;
             }
             // Otherwise, if the fire button is released and the shell hasn't been launched yet...
@@ -80,8 +83,8 @@ namespace Complete
                 // ... launch the shell.
                 Fire ();
             }
+            SpinTurret(m_TurnSpeed);
         }
-
 
         private void Fire ()
         {
@@ -103,6 +106,20 @@ namespace Complete
 
             // Reset the launch force.  This is a precaution in case of missing button events.
             m_CurrentLaunchForce = m_MinLaunchForce;
+        }
+        private void SpinTurret(float Speed)
+        {
+            if (Input.GetKey(KeyCode.E))
+            {
+                TankTurret.Rotate(new Vector3(0, -Speed * Time.deltaTime, 0), Space.Self);
+                m_FireTransform.RotateAround(TankTurret.position, Vector3.up, -Speed * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.Q))
+            {
+                TankTurret.Rotate(new Vector3(0, Speed * Time.deltaTime, 0), Space.Self);
+                m_FireTransform.RotateAround(TankTurret.position, Vector3.up, Speed * Time.deltaTime);
+            }
+
         }
     }
 }
